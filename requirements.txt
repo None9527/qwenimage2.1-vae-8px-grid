@@ -1,0 +1,8 @@
+torch
+diffusers
+safetensors
+pillow
+numpy
+scipy
+lpips
+tensorboard
