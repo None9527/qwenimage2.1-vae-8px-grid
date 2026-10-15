@@ -12,6 +12,7 @@ from PIL import Image
 from vae8px.decode import decode_image
 from vae8px.io import atomic_json, read_rectangle
 from vae8px.metrics import horizontal_error, perceptual_patches, phase_loss
+from vae8px.paths import locate
 
 
 def spectrum(rgb01):
@@ -62,7 +63,7 @@ def evaluate(vae, net, validation, generated, writer, step, root):
     mean = torch.tensor(vae.config.latents_mean, device="cuda").view(1, 64, 1, 1, 1)
     std = torch.tensor(vae.config.latents_std, device="cuda").view(1, 64, 1, 1, 1)
     for case in generated:
-        packed = torch.load(case["path"], weights_only=True, map_location="cuda")
+        packed = torch.load(locate(case["path"]), weights_only=True, map_location="cuda")
         size = case["size"]
         latent = QwenImage21Pipeline._unpack_latents(packed, size, size, 16).float() * std + mean
         decoded = vae.decode(latent, return_dict=False)[0] if size == 1024 else decode_image(vae, latent)
@@ -94,7 +95,7 @@ def evaluate_available(vae, net, config, writer, step, root):
     unavailable = []
     for index, case in enumerate(config["validation"]):
         try:
-            with open(case["source"], "rb") as handle:
+            with open(locate(case["source"]), "rb") as handle:
                 handle.read(1)
         except OSError as exc:
             unavailable.append(dict(id=index, source=case["source"], error=repr(exc)))

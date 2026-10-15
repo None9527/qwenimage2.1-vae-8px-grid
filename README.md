@@ -165,7 +165,7 @@ A 把像素和 LPIPS 的权重放弱。5000 步平均 PSNR 掉到 30.95，内容
 
 上面是实验记录。下面是把这次流程跑起来的代码。权重、潜变量和照片不在 git 里。
 
-`vae8px/` 是三步共用的部分。`decode.py` 是分块解码，训练时用它，整张激活图放不进显存。`metrics.py` 是 8 像素、2 像素和锐度，和纹理库里的 `measures` 同一套数。`io.py` 按种子裁照片，同一张图同一种子得到同一块。`localize.py` 是额头特征上的 2×2 相位，SiLU 那张表用的就是这个函数。`paths.py` 是模型、照片索引和运行目录，可以用环境变量改。
+`vae8px/` 是三步共用的部分。`decode.py` 是分块解码，训练时用它，整张激活图放不进显存。`metrics.py` 是 8 像素、2 像素和锐度，和纹理库里的 `measures` 同一套数。`io.py` 按种子裁照片，同一张图同一种子得到同一块。`localize.py` 是额头特征上的 2×2 相位，SiLU 那张表用的就是这个函数。`paths.py` 只读环境变量。
 
 三个入口按实验顺序：
 
@@ -173,7 +173,7 @@ A 把像素和 LPIPS 的权重放弱。5000 步平均 PSNR 掉到 30.95，内容
 - `experiments/fourarm/orchestrate.py` 依次跑 C、A、B、AB，各 5000 步，显卡上不重叠。可训参数名单和八张验证照片在 `experiments/fourarm/protocol.json`。
 - `experiments/followup/train.py` 从 Texture-Fix 只训 `up_blocks.2` 和 `.3`。`--smoke` 先做一步，确认分块解码和原生解码一致，再 `--steps 1000`。
 
-B、AB 用的 `PatchDiscWithContext` 来自 [madebyollin/seraena](https://github.com/madebyollin/seraena)。本机副本在 `/home/none/seraena`，路径可用 `SERAENA_PATH` 改。C、A 的无条件判别器是 Pix2Pix PatchGAN。两份许可都在 `THIRD_PARTY.md`。
+B、AB 用的 `PatchDiscWithContext` 来自 [madebyollin/seraena](https://github.com/madebyollin/seraena)。运行前把那份检出的目录放进 `SERAENA_PATH`。源码没有收进这里。C、A 的无条件判别器是 Pix2Pix PatchGAN。两份许可都在 `THIRD_PARTY.md`。
 
 ```bash
 export PYTHONPATH=.
@@ -183,11 +183,10 @@ python experiments/followup/train.py --smoke
 python experiments/followup/train.py --steps 1000
 ```
 
-换机器时设 `VAE8_DATA`、`VAE8_OFFICIAL`、`VAE8_TEXTURE_FIX`。四组实验还要照片索引 `index/train.jsonl`，以及 protocol 里的照片路径在磁盘上。补训还要纹理库里的潜变量，和 Texture-Fix 已经解码的 PNG，锐度地板用的是那些图。
+运行前设置 `VAE8_OFFICIAL`、`VAE8_TEXTURE_FIX`、`VAE8_PHOTO_INDEX`、`VAE8_PHOTO_ROOT`、`VAE8_BANK`、`VAE8_FOURARM_RUN`、`VAE8_FOLLOWUP_RUN`、`VAE8_LOCALIZE_RUN`、`VAE8_FOREHEAD_LATENT`。`protocol.json` 里的验证照片和潜变量只写文件名。补训的锐度地板用的是纹理库里 Texture-Fix 已经解码的 PNG，那些图也不在仓库里。
 
 ## 记录
 
-- 定位笔记在 [docs/localization-20261012.md](docs/localization-20261012.md)。原始轨迹在 `qwen21-vae-formal/run_20261010_163828/weave_branch_causal_20261012/`。
-- 四组训练的输出目录是 `qwen21-official-fourarm-20261013`。上表是八张 `kind=real` 的平均。
-- 补训的输出目录是 `qwen21-tf-grid-20261015`。逐步损失在 `metrics.jsonl`，三张图在 `eval_000000` 和 `eval_000750`。SiLU 再测量在 `silu_trace_step750.json` 和 `silu_trace_step750_exit.json`。
-- 文中的图在 `figures/`，运行时拼出来的面板在补训目录的 `panels/`。这次的训练脚本是 `experiments/followup/train.py`。生产训练入口没有改。
+仓库里有这篇说明、[定位笔记](docs/localization-20261012.md)、`figures/` 的六张图，以及 `experiments/` 里的测量和训练脚本。
+
+权重、照片、潜变量、检查点、逐步日志和运行时拼出来的面板不在这个仓库里。上文的表就是那几次运行留下的数。生产训练入口没有改。

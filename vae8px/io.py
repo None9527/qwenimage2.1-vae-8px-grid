@@ -16,6 +16,8 @@ import numpy as np
 import torch
 from PIL import Image, ImageOps
 
+from vae8px.paths import locate
+
 SHAPES = {
     "1:1": (2048, 2048),
     "4:3": (2400, 1792),
@@ -38,7 +40,7 @@ def read_rectangle(record, shape, seed):
     started = time.perf_counter()
     rng = random.Random(seed)
     width, height = shape
-    with Image.open(record["source"]) as image:
+    with Image.open(locate(record["source"])) as image:
         image = ImageOps.exif_transpose(image).convert("RGB")
         if image.width < width or image.height < height:
             raise ValueError(("source too small", record["source"], image.size, shape))
@@ -62,7 +64,7 @@ def sample_online(records, step, seed, validation=False):
         record = records[rng.randrange(len(records))]
         attempts += 1
         try:
-            with Image.open(record["source"]) as image:
+            with Image.open(locate(record["source"])) as image:
                 width, height = image.size
                 if image.getexif().get(274, 1) in (5, 6, 7, 8):
                     width, height = height, width

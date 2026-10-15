@@ -1,20 +1,17 @@
 """Official-initialized 2x2. The step loop is the 2026-10-13 run.
 
 Shared decode, metrics, and the held-out report live in vae8px.
-Arms B and AB use PatchDiscWithContext from madebyollin/seraena
+Arms B and AB import PatchDiscWithContext from madebyollin/seraena
 (https://github.com/madebyollin/seraena), MIT, Copyright (c) 2023 Ollin Boer Bohan.
-That package is not vendored. Default checkout is /home/none/seraena;
-override with SERAENA_PATH.
+The package is not vendored. Set SERAENA_PATH to a checkout of that repository.
 """
 import argparse, concurrent.futures, gc, hashlib, json, os, random, signal, sys, time, traceback
 from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
-sys.path.insert(0, os.environ.get("SERAENA_PATH", "/home/none/seraena"))
 import lpips
 import torch
 import torch.nn.functional as F
 from diffusers import AutoencoderKLQwenImage21
-from seraena import PatchDiscWithContext
 from torch.utils.tensorboard import SummaryWriter
 from vae8px.corrupt import blurred, periodic
 from vae8px.decode import decode_image
@@ -62,10 +59,19 @@ def patches(y,target,z,vae,index):
  fake.append(F.interpolate(y[:,:3],size=256,mode='area'));real.append(F.interpolate(target[:,:3],size=256,mode='area'));contexts.append(F.interpolate(ctx,size=16,mode='area'))
  return torch.cat(fake),torch.cat(real),torch.cat(contexts).detach()
 
+def patch_disc_with_context():
+ path = os.environ.get("SERAENA_PATH")
+ if not path:
+  raise RuntimeError("set SERAENA_PATH to a checkout of https://github.com/madebyollin/seraena")
+ if path not in sys.path:
+  sys.path.insert(0, path)
+ from seraena import PatchDiscWithContext
+ return PatchDiscWithContext
+
 class Critic:
  def __init__(self,conditional):
   self.conditional=conditional;torch.manual_seed(SEED+99)
-  if conditional:self.d=PatchDiscWithContext(3,64).cuda()
+  if conditional:self.d=patch_disc_with_context()(3,64).cuda()
   else:
    self.d=NLayerDiscriminator(input_nc=3,ndf=64,n_layers=3,use_actnorm=False).cuda().eval()
    for i,m in enumerate(self.d.main):

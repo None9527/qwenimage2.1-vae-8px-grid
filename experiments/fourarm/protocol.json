@@ -71,7 +71,7 @@
   ],
   "validation": [
     {
-      "source": "/home/none/NAS/图库/UltraFlux/images/0488/pexels-photo-11227815.jpeg",
+      "source": "pexels-photo-11227815.jpeg",
       "shape": [
         1792,
         2400
@@ -80,7 +80,7 @@
       "ratio": "3:4"
     },
     {
-      "source": "/home/none/NAS/图库/UltraFlux/images/0333/pexels-photo-12087911.jpeg",
+      "source": "pexels-photo-12087911.jpeg",
       "shape": [
         2400,
         1792
@@ -89,7 +89,7 @@
       "ratio": "4:3"
     },
     {
-      "source": "/home/none/NAS/图库/UltraFlux/images/0048/photo-1669999615370-050e7e95d702.jpg",
+      "source": "photo-1669999615370-050e7e95d702.jpg",
       "shape": [
         2048,
         2048
@@ -97,7 +97,7 @@
       "crop_seed": 271557388
     },
     {
-      "source": "/home/none/NAS/图库/UltraFlux/images/0860/photo-1617736777566-450e793153d5.jpg",
+      "source": "photo-1617736777566-450e793153d5.jpg",
       "shape": [
         1536,
         2752
@@ -105,7 +105,7 @@
       "crop_seed": 1029409228
     },
     {
-      "source": "/home/none/NAS/图库/UltraFlux/images/0882/photo-1583354103870-8afca90fc25b.jpg",
+      "source": "photo-1583354103870-8afca90fc25b.jpg",
       "shape": [
         1696,
         2528
@@ -113,7 +113,7 @@
       "crop_seed": 65896765
     },
     {
-      "source": "/home/none/NAS/图库/UltraFlux/images/0648/pexels-photo-13409192.jpeg",
+      "source": "pexels-photo-13409192.jpeg",
       "shape": [
         2048,
         2048
@@ -121,7 +121,7 @@
       "crop_seed": 1499309334
     },
     {
-      "source": "/home/none/NAS/图库/UltraFlux/images/0742/photo-1486911278844-a81c5267e227.jpg",
+      "source": "photo-1486911278844-a81c5267e227.jpg",
       "shape": [
         2528,
         1696
@@ -129,7 +129,7 @@
       "crop_seed": 282122880
     },
     {
-      "source": "/home/none/NAS/图库/UltraFlux/images/0806/pexels-photo-10323041.jpeg",
+      "source": "pexels-photo-10323041.jpeg",
       "shape": [
         1792,
         2400
@@ -140,7 +140,7 @@
   "generated": [
     {
       "id": "old_panda",
-      "path": "artifacts/experiments/qwen21_official_turbo_20261010/bf16_dense_0.pt",
+      "path": "bf16_dense_0.pt",
       "size": 1024,
       "roi": [
         352,
@@ -151,7 +151,7 @@
     },
     {
       "id": "turbo_fox_1024_s3101",
-      "path": "/home/none/NAS/None工作/nvfp4-training/qwen21-latent-bank-20261012/latents/turbo_fox_1024_s3101.pt",
+      "path": "latents/turbo_fox_1024_s3101.pt",
       "size": 1024,
       "roi": [
         576,
@@ -162,7 +162,7 @@
     },
     {
       "id": "base_fox_1024_s3101",
-      "path": "/home/none/NAS/None工作/nvfp4-training/qwen21-latent-bank-20261012/latents/base_fox_1024_s3101.pt",
+      "path": "latents/base_fox_1024_s3101.pt",
       "size": 1024,
       "roi": [
         448,
@@ -173,7 +173,7 @@
     },
     {
       "id": "turbo_panda_window_2048_s3101",
-      "path": "/home/none/NAS/None工作/nvfp4-training/qwen21-latent-bank-20261012/latents/turbo_panda_window_2048_s3101.pt",
+      "path": "latents/turbo_panda_window_2048_s3101.pt",
       "size": 2048,
       "roi": [
         704,

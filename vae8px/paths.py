@@ -1,7 +1,11 @@
 """Where models, photos, and run directories live.
 
-Defaults are this machine. Override with environment variables when the
-same layout sits somewhere else. The git repo does not contain weights.
+The repository stores no machine paths. Set the environment variables
+below before a run. Weights, photos, and latents stay outside git.
+
+VAE8_OFFICIAL, VAE8_TEXTURE_FIX, VAE8_PHOTO_INDEX, VAE8_PHOTO_ROOT,
+VAE8_BANK, VAE8_FOURARM_RUN, VAE8_FOLLOWUP_RUN, VAE8_LOCALIZE_RUN,
+VAE8_FOREHEAD_LATENT. Arms B and AB also need SERAENA_PATH.
 """
 from __future__ import annotations
 
@@ -9,41 +13,78 @@ import os
 from pathlib import Path
 
 
-def _path(name: str, default: str) -> Path:
-    return Path(os.environ.get(name, default))
+def require(name: str) -> Path:
+    value = os.environ.get(name)
+    if not value:
+        raise RuntimeError(f"set {name}")
+    return Path(value)
 
 
-DATA = _path("VAE8_DATA", "/home/none/NAS/None工作/nvfp4-training")
-OFFICIAL_VAE = _path("VAE8_OFFICIAL", "/home/none/models/qwen-image-2.1-turbo/vae")
-TEXTURE_FIX = _path("VAE8_TEXTURE_FIX", "/home/none/models/qwen-image-2.1-vae-texture-fix")
-PHOTO_INDEX = _path(
-    "VAE8_PHOTO_INDEX",
-    str(DATA / "qwen21-vae-formal/run_20261010_163828/index"),
-)
-BANK = _path("VAE8_BANK", str(DATA / "qwen21-latent-bank-20261012"))
-FOURARM_RUN = _path("VAE8_FOURARM_RUN", str(DATA / "qwen21-official-fourarm-20261013"))
-FOLLOWUP_RUN = _path("VAE8_FOLLOWUP_RUN", str(DATA / "qwen21-tf-grid-20261015"))
-LOCALIZE_RUN = _path(
-    "VAE8_LOCALIZE_RUN",
-    str(DATA / "qwen21-vae-formal/run_20261010_163828/weave_branch_causal_20261012"),
-)
-FOREHEAD_LATENT = _path(
-    "VAE8_FOREHEAD_LATENT",
-    "/home/none/nvfp4-diifusion-kernel/artifacts/experiments/qwen21_official_turbo_20261010/bf16_dense_0.pt",
-)
+def locate(spec: str) -> str:
+    """Resolve a repo-relative file name. Absolute paths pass through."""
+    path = Path(spec)
+    if path.is_absolute():
+        return str(path)
+    found = []
+    for name in ("VAE8_PHOTO_ROOT", "VAE8_BANK", "VAE8_FOREHEAD_LATENT"):
+        raw = os.environ.get(name)
+        if not raw:
+            continue
+        root = Path(raw)
+        if root.is_file() and root.name == path.name:
+            found.append(root)
+        elif root.is_dir() and (root / path).is_file():
+            found.append(root / path)
+    unique = []
+    seen = set()
+    for item in found:
+        key = str(item.resolve())
+        if key not in seen:
+            seen.add(key)
+            unique.append(item)
+    found = unique
+    if len(found) == 1:
+        return str(found[0])
+    if not found:
+        raise FileNotFoundError(
+            f"{spec} is not absolute; set VAE8_PHOTO_ROOT, VAE8_BANK, or VAE8_FOREHEAD_LATENT"
+        )
+    names = ", ".join(str(item) for item in found)
+    raise RuntimeError(f"{spec} matched more than one file: {names}")
 
 
 class _Paths:
-    """Attribute names the trainers already use."""
+    @property
+    def official_vae(self) -> Path:
+        return require("VAE8_OFFICIAL")
 
-    official_vae = OFFICIAL_VAE
-    texture_fix = TEXTURE_FIX
-    photo_index = PHOTO_INDEX
-    bank = BANK
-    fourarm_run = FOURARM_RUN
-    followup_run = FOLLOWUP_RUN
-    localize_run = LOCALIZE_RUN
-    forehead_latent = FOREHEAD_LATENT
+    @property
+    def texture_fix(self) -> Path:
+        return require("VAE8_TEXTURE_FIX")
+
+    @property
+    def photo_index(self) -> Path:
+        return require("VAE8_PHOTO_INDEX")
+
+    @property
+    def bank(self) -> Path:
+        return require("VAE8_BANK")
+
+    @property
+    def fourarm_run(self) -> Path:
+        return require("VAE8_FOURARM_RUN")
+
+    @property
+    def followup_run(self) -> Path:
+        return require("VAE8_FOLLOWUP_RUN")
+
+    @property
+    def localize_run(self) -> Path:
+        return require("VAE8_LOCALIZE_RUN")
+
+    @property
+    def forehead_latent(self) -> Path:
+        return require("VAE8_FOREHEAD_LATENT")
 
 
 PATHS = _Paths()
