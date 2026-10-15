@@ -1,5 +1,7 @@
 # 狐狸额头上的 8 像素网格
 
+模型仓库：[None1082/None-qwenimage2.1-vae](https://huggingface.co/None1082/None-qwenimage2.1-vae)
+
 这是一篇社区实验记录，写 Qwen-Image 2.1 的 VAE 解码器。基线是 [madebyollin/texture-fix-vae-for-qwen-image-2.1](https://huggingface.co/madebyollin/texture-fix-vae-for-qwen-image-2.1)，它是 [Qwen/Qwen-Image-2.1](https://huggingface.co/Qwen/Qwen-Image-2.1) 的非官方微调。我们在那份权重上又训了 750 步。生产用的解码器没有换。
 
 生成图的毛发上有三层周期纹。最细的那层是相邻像素一明一暗，Texture-Fix 已经压掉，毛还更利。剩下两层按输出像素算：横竖每 8 像素一格，斜向每 4 像素一格。
