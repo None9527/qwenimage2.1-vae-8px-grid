@@ -1,7 +1,10 @@
 """Official-initialized 2x2. The step loop is the 2026-10-13 run.
 
 Shared decode, metrics, and the held-out report live in vae8px.
-Arms B and AB need the local seraena package on PYTHONPATH.
+Arms B and AB use PatchDiscWithContext from madebyollin/seraena
+(https://github.com/madebyollin/seraena), MIT, Copyright (c) 2023 Ollin Boer Bohan.
+That package is not vendored. Default checkout is /home/none/seraena;
+override with SERAENA_PATH.
 """
 import argparse, concurrent.futures, gc, hashlib, json, os, random, signal, sys, time, traceback
 from pathlib import Path

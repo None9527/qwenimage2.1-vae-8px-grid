@@ -56,6 +56,8 @@ Texture-Fix 的权重上，这组比例和官方几乎一样。它修好了 2 �
 
 Texture-Fix 说明白了高分辨率那几级值得训。我们仍想知道：从官方权重出发，换损失和判别器，能不能自己把生成图上的 8 像素网格训掉。四组一起跑了 5000 步，编码器冻住，学习率 5e-5，数据相同。
 
+B 和 AB 的条件判别器是 Texture-Fix 作者 Ollin Boer Bohan（madebyollin）的 [Seraena](https://github.com/madebyollin/seraena) 里的 `PatchDiscWithContext`，MIT 许可，Copyright (c) 2023。上下文通道取潜变量的 64 维。更新方式沿用该仓库说明里的重放缓冲，以及把判别梯度缩放到单位标准差后再修正生成图。`Seraena` 那个训练类没有调用，源码也没有收进这个仓库。C 和 A 仍是无条件的 Pix2Pix PatchGAN。
+
 | 组 | 照片损失 | 判别器 | PSNR | LPIPS | 照片上的 2 像素 |
 | --- | --- | --- | ---: | ---: | ---: |
 | 起点 | 官方权重，还没训 |  | 32.29 | 0.069 | 1.10 |
@@ -171,7 +173,7 @@ A 把像素和 LPIPS 的权重放弱。5000 步平均 PSNR 掉到 30.95，内容
 - `experiments/fourarm/orchestrate.py` 依次跑 C、A、B、AB，各 5000 步，显卡上不重叠。可训参数名单和八张验证照片在 `experiments/fourarm/protocol.json`。
 - `experiments/followup/train.py` 从 Texture-Fix 只训 `up_blocks.2` 和 `.3`。`--smoke` 先做一步，确认分块解码和原生解码一致，再 `--steps 1000`。
 
-条件判别器来自本机的 `seraena`（默认 `/home/none/seraena`，可用 `SERAENA_PATH` 改）。无条件判别器是 Pix2Pix 的 PatchGAN，许可见 `THIRD_PARTY.md`。
+B、AB 用的 `PatchDiscWithContext` 来自 [madebyollin/seraena](https://github.com/madebyollin/seraena)。本机副本在 `/home/none/seraena`，路径可用 `SERAENA_PATH` 改。C、A 的无条件判别器是 Pix2Pix PatchGAN。两份许可都在 `THIRD_PARTY.md`。
 
 ```bash
 export PYTHONPATH=.
